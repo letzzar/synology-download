@@ -10,6 +10,13 @@ import { store } from '../../store/store';
 import * as module from './query.service';
 import { QueryService } from './query.service';
 
+vi.mock('../../utils/crypto.utils', () => ({
+  decryptPassword: vi.fn(async (value?: string) => {
+    if (value === 'aesgcm.v1:broken') throw new Error('OperationError');
+    return value?.startsWith('aesgcm.v1:') ? 'decrypted-pass' : value;
+  }),
+}));
+
 describe('query.service', () => {
   it('is importable', () => {
     expect(module).toBeTruthy();
@@ -76,6 +83,20 @@ describe('query.service', () => {
       const request = login.mock.calls[0][0];
       expect(request.otp_code).toBeUndefined();
       expect(request.device_id).toBe('saved-did');
+    });
+
+    it('decrypts a stored password only for the request', async () => {
+      expect.assertions(1);
+      const request = await sentRequest({ ...base, type: ConnectionType.local, password: 'aesgcm.v1:cipher' });
+      expect(request.passwd).toBe('decrypted-pass');
+    });
+
+    it('fails with a clear error when the stored password cannot be decrypted', async () => {
+      expect.assertions(2);
+      await expect(lastValueFrom(QueryService.login({ ...base, type: ConnectionType.local, password: 'aesgcm.v1:broken' }, baseUrl))).rejects.toThrow(
+        'password_decrypt_failed',
+      );
+      expect(login).not.toHaveBeenCalled();
     });
 
     it('sends only the code without device token', async () => {

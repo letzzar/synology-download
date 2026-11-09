@@ -26,6 +26,7 @@
   "common__error__query_service_not_ready": { "message": "El servicio de consultas no está listo (URL base no válida o ausente)" },
   "common__error__query_service_not_logged_in": { "message": "El servicio de consultas no ha iniciado sesión" },
   "common__error__login_password_required": { "message": "Falta el usuario obligatorio '$1' o la contraseña '$2'" },
+  "common__error__password_decrypt_failed": { "message": "No se pudo descifrar la contraseña guardada, vuelve a introducirla" },
   "common__error__otp_code_device_required": { "message": "Falta el código 2FA obligatorio '$1' o el nombre del dispositivo '$2'" },
   "common__error__create_task_fail": { "message": "No se pudo crear la tarea de descarga" },
   "common__error__login_required": { "message": "Inicio de sesión requerido" },
